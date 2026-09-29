@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import WorkoutActions from "@/components/WorkoutActions";
 import {
   Clock3,
   Flame,
@@ -7,8 +8,6 @@ import {
   Dumbbell,
   BarChart3,
   Repeat,
-  Bookmark,
-  Plus,
 } from "lucide-react";
 
 interface IWorkout {
@@ -47,7 +46,10 @@ const getWorkouts = async (): Promise<IWorkout[]> => {
 
     const data = await response.json();
 
-    return Array.isArray(data) ? data : [];
+    // API response array অথবা { data: [] } হলে দুটোই handle করবে
+    const workoutData = Array.isArray(data) ? data : data.data;
+
+    return Array.isArray(workoutData) ? workoutData : [];
   } catch (error) {
     console.error("Error fetching workout data:", error);
     return [];
@@ -62,15 +64,14 @@ const WorkoutDetailsPage = async ({
   const workoutsData = await getWorkouts();
 
   const workout = workoutsData.find(
-    (item: IWorkout) => String(item.id) === String(id),
+    (item) => String(item.id) === String(id)
   );
 
-  // Workout not found
   if (!workout) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center bg-[#0b0d11] px-4 text-center">
+      <main className="flex min-h-[70vh] flex-col items-center justify-center bg-[#0b0d11] px-4 text-center">
         <h1 className="text-3xl font-extrabold text-white">
-          Workout Not Found
+          Workout not found
         </h1>
 
         <p className="mt-2 text-sm text-gray-400">
@@ -78,12 +79,12 @@ const WorkoutDetailsPage = async ({
         </p>
 
         <Link
-          href="/workouts"
-          className="mt-6 rounded-lg bg-lime-400 px-6 py-3 text-sm font-bold text-black transition hover:bg-lime-300"
+          href="/"
+          className="mt-6 rounded-lg bg-lime-400 px-6 py-3 text-sm font-bold text-black hover:bg-lime-300"
         >
-          GO TO WORKOUTS
+          Go to workouts
         </Link>
-      </div>
+      </main>
     );
   }
 
@@ -91,19 +92,19 @@ const WorkoutDetailsPage = async ({
     <main className="min-h-screen bg-[#0b0d11] px-4 py-10 text-white md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
 
-        {/* Back Button */}
+        {/* Back */}
         <Link
-          href="/workouts"
-          className="mb-6 inline-block text-sm font-semibold text-gray-400 transition hover:text-lime-400"
+          href="/"
+          className="mb-6 inline-block text-sm font-semibold text-gray-400 hover:text-lime-400"
         >
           ← Back to workouts
         </Link>
 
-        {/* Main Details */}
+        {/* Main */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
-          {/* LEFT - IMAGE */}
-          <div className="relative h-[400px] overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d] md:h-[500px]">
+          {/* LEFT IMAGE */}
+          <div className="relative h-[400px] overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d] md:h-[550px]">
             <Image
               src={workout.image}
               alt={workout.name}
@@ -114,20 +115,8 @@ const WorkoutDetailsPage = async ({
             />
           </div>
 
-          {/* RIGHT - DETAILS */}
+          {/* RIGHT DETAILS */}
           <div className="flex flex-col justify-center">
-
-            {/* Tags */}
-            <div className="mb-4 flex flex-wrap gap-2">
-              {workout.muscleGroups.map((group) => (
-                <span
-                  key={group}
-                  className="rounded-full bg-lime-400 px-3 py-1 text-xs font-bold uppercase text-black"
-                >
-                  {group}
-                </span>
-              ))}
-            </div>
 
             {/* Title */}
             <h1 className="text-3xl font-extrabold uppercase leading-tight md:text-5xl">
@@ -139,47 +128,59 @@ const WorkoutDetailsPage = async ({
               {workout.description}
             </p>
 
-            {/* Workout Information */}
-            <div className="mt-7 grid grid-cols-2 gap-3 rounded-2xl border border-gray-800 bg-[#15171d] p-5 sm:grid-cols-3">
+            {/* Tags */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {workout.muscleGroups?.map((group) => (
+                <span
+                  key={group}
+                  className="rounded-full bg-lime-400 px-3 py-1 text-xs font-bold uppercase text-black"
+                >
+                  {group}
+                </span>
+              ))}
+            </div>
+
+            {/* Specs */}
+            <div className="mt-7 overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d]">
 
               <Spec
-                icon={<Dumbbell size={16} />}
+                icon={<Dumbbell size={15} />}
                 label="Equipment"
                 value={workout.equipment}
               />
 
               <Spec
-                icon={<BarChart3 size={16} />}
+                icon={<BarChart3 size={15} />}
                 label="Difficulty"
                 value={workout.difficulty}
               />
 
               <Spec
-                icon={<Repeat size={16} />}
+                icon={<Repeat size={15} />}
                 label="Sets"
                 value={String(workout.sets)}
               />
 
               <Spec
-                icon={<Repeat size={16} />}
+                icon={<Repeat size={15} />}
                 label="Reps"
                 value={workout.reps}
               />
 
               <Spec
-                icon={<Clock3 size={16} />}
+                icon={<Clock3 size={15} />}
                 label="Duration"
                 value={`${workout.duration} min`}
               />
 
               <Spec
-                icon={<Flame size={16} />}
+                icon={<Flame size={15} />}
                 label="Calories"
                 value={`${workout.caloriesBurned} kcal`}
               />
 
               <Spec
-                icon={<Star size={16} />}
+                icon={<Star size={15} />}
                 label="Rating"
                 value={String(workout.rating)}
               />
@@ -192,9 +193,9 @@ const WorkoutDetailsPage = async ({
                 Instructions
               </h2>
 
-              <div className="space-y-3">
-                {workout.instructions.map((instruction, index) => (
-                  <div
+              <ol className="space-y-3">
+                {workout.instructions?.map((instruction, index) => (
+                  <li
                     key={index}
                     className="flex gap-3 text-sm leading-6 text-gray-400"
                   >
@@ -202,25 +203,15 @@ const WorkoutDetailsPage = async ({
                       {index + 1}
                     </span>
 
-                    <p>{instruction}</p>
-                  </div>
+                    <span>{instruction}</span>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
 
-            {/* Buttons */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-lime-400 px-5 py-3 text-sm font-bold text-black transition hover:bg-lime-300">
-                <Plus size={18} />
-                ADD TO TODAY'S PLAN
-              </button>
-
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-[#15171d] px-5 py-3 text-sm font-bold text-white transition hover:border-lime-400 hover:text-lime-400">
-                <Bookmark size={18} />
-                SAVE FOR LATER
-              </button>
-
+            {/* BUTTONS */}
+            <div className="mt-8">
+              <WorkoutActions workout={workout} />
             </div>
 
           </div>
@@ -240,13 +231,13 @@ const Spec = ({
   value: string;
 }) => {
   return (
-    <div>
+    <div className="flex items-center justify-between border-b border-gray-800 px-4 py-3 last:border-b-0">
       <div className="flex items-center gap-2 text-xs uppercase text-gray-500">
         {icon}
         <span>{label}</span>
       </div>
 
-      <p className="mt-1 text-sm font-bold text-white">
+      <p className="text-sm font-semibold text-white">
         {value}
       </p>
     </div>
