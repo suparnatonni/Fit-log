@@ -6,6 +6,7 @@ import Banner from "@/components/Banner";
 import WorkoutLibrary from "@/components/WorkoutLibrary";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { PlanProvider } from "@/components/context/PlanContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Banner />
          <WorkoutLibrary />
          <ToastContainer position="top-right" />
+         <PlanProvider />
         {children}</body>
      
     </html>
