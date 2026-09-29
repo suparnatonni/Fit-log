@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { FiClock, FiStar } from "react-icons/fi";
+import { FaFire } from "react-icons/fa";
+
 type Workout = {
   id: string | number;
   name: string;
@@ -51,6 +54,7 @@ const WorkoutLibrary = () => {
     fetchWorkouts();
   }, []);
 
+  // Loading
   if (loading) {
     return (
       <section id="library" className="px-4 py-12">
@@ -73,6 +77,7 @@ const WorkoutLibrary = () => {
     );
   }
 
+  // Error
   if (error) {
     return (
       <section id="library" className="px-4 py-12">
@@ -86,6 +91,7 @@ const WorkoutLibrary = () => {
   return (
     <section id="library" className="px-4 py-10 md:py-14">
       <div className="mx-auto max-w-7xl">
+
         {/* Section Header */}
         <div className="mb-5">
           <h2 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
@@ -99,6 +105,7 @@ const WorkoutLibrary = () => {
 
         {/* Workout Grid */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
           {workouts.map((workout) => {
             const categories =
               workout.category || workout.tags || [];
@@ -109,6 +116,7 @@ const WorkoutLibrary = () => {
                 href={`/workouts/${workout.id}`}
                 className="group overflow-hidden rounded-xl border border-gray-800 bg-[#15171d] transition hover:-translate-y-1 hover:border-lime-400/50"
               >
+
                 {/* Image */}
                 <div className="relative h-40 w-full overflow-hidden">
                   <Image
@@ -122,6 +130,7 @@ const WorkoutLibrary = () => {
 
                 {/* Content */}
                 <div className="p-3">
+
                   {/* Category Tags */}
                   <div className="mb-2 flex flex-wrap gap-1">
                     {categories.slice(0, 3).map((tag) => (
@@ -149,16 +158,31 @@ const WorkoutLibrary = () => {
 
                   {/* Stats */}
                   <div className="flex items-center gap-3 text-[9px] text-gray-400">
-                    <span>◷ {workout.duration ?? 0} min</span>
 
-                    <span>🔥 {workout.calories ?? 0} kcal</span>
+                    {/* Duration */}
+                    <span className="flex items-center gap-1">
+                      <FiClock className="text-lime-400" size={11} />
+                      {workout.duration ?? 0} min
+                    </span>
 
-                    <span>☆ {workout.rating ?? 0}</span>
+                    {/* Calories */}
+                    <span className="flex items-center gap-1">
+                      <FaFire className="text-lime-400" size={10} />
+                      {workout.calories ?? 0} kcal
+                    </span>
+
+                    {/* Rating */}
+                    <span className="flex items-center gap-1">
+                      <FiStar className="text-lime-400" size={11} />
+                      {workout.rating ?? 0}
+                    </span>
+
                   </div>
                 </div>
               </Link>
             );
           })}
+
         </div>
       </div>
     </section>
