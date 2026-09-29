@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Banner from "@/components/Banner";
 import WorkoutLibrary from "@/components/WorkoutLibrary";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar />
         <Banner />
          <WorkoutLibrary />
+         <ToastContainer position="top-right" />
         {children}</body>
      
     </html>
