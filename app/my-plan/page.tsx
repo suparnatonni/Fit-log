@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { usePlan } from "@/components/context/PlanContext";
 import {
   Clock3,
   Flame,
@@ -12,30 +11,62 @@ import {
   X,
 } from "lucide-react";
 
+import { usePlan } from "@/components/context/PlanContext";
+
 export default function MyPlanPage() {
   const {
     plan,
     saved,
+    loaded,
     removeFromPlan,
     removeFromSaved,
+    markAsDone,
+    doneIds,
   } = usePlan();
 
-  const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
+  const [activeTab, setActiveTab] = useState<
+    "plan" | "saved"
+  >("plan");
 
-  const todayPlan = plan ?? [];
-  const savedWorkouts = saved ?? [];
+  if (!loaded) {
+    return (
+      <main className="flex min-h-[70vh] items-center justify-center bg-[#0f1014] px-4 text-white">
+        <div className="text-center">
+          <span className="loading loading-spinner loading-lg text-lime-400" />
+
+          <p className="mt-3 text-sm text-gray-400">
+            Loading workouts…
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  const todayPlan = Array.isArray(plan)
+    ? plan
+    : [];
+
+  const savedWorkouts = Array.isArray(saved)
+    ? saved
+    : [];
 
   const currentWorkouts =
-    activeTab === "plan" ? todayPlan : savedWorkouts;
+    activeTab === "plan"
+      ? todayPlan
+      : savedWorkouts;
 
   const minutes = todayPlan.reduce(
-    (total, workout) => total + (workout.duration ?? 0),
+    (total, workout) =>
+      total + (workout.duration ?? 0),
     0
   );
 
   const calories = todayPlan.reduce(
     (total, workout) =>
-      total + (workout.calories ?? workout.caloriesBurned ?? 0),
+      total +
+      (workout.calories ??
+        workout.caloriesBurned ??
+        0),
     0
   );
 
@@ -45,12 +76,13 @@ export default function MyPlanPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-extrabold">
+          <h1 className="text-3xl font-extrabold md:text-4xl">
             MY PLAN
           </h1>
 
           <p className="mt-1 text-sm text-gray-400">
-            Cap of five lifts for today. Finish them, then load more.
+            Cap of five lifts for today. Finish them,
+            then load more.
           </p>
         </div>
 
@@ -93,22 +125,26 @@ export default function MyPlanPage() {
         <div className="mb-5 flex w-fit rounded-lg border border-gray-800 bg-[#15171d] p-1">
 
           <button
-            onClick={() => setActiveTab("plan")}
-            className={`rounded-md px-5 py-2 text-sm ${
+            onClick={() =>
+              setActiveTab("plan")
+            }
+            className={`rounded-md px-5 py-2 text-sm transition ${
               activeTab === "plan"
                 ? "bg-[#242831] text-white"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-white"
             }`}
           >
             Today's Plan
           </button>
 
           <button
-            onClick={() => setActiveTab("saved")}
-            className={`rounded-md px-5 py-2 text-sm ${
+            onClick={() =>
+              setActiveTab("saved")
+            }
+            className={`rounded-md px-5 py-2 text-sm transition ${
               activeTab === "saved"
                 ? "bg-[#242831] text-white"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-white"
             }`}
           >
             Saved
@@ -118,19 +154,20 @@ export default function MyPlanPage() {
 
         {/* Empty State */}
         {currentWorkouts.length === 0 ? (
-          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-800 text-center">
+          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-800 px-4 text-center">
 
             <h2 className="text-xl font-extrabold">
               NOTHING HERE YET
             </h2>
 
-            <p className="mt-2 text-sm text-gray-500">
-              Browse the library and add a lift to get today moving.
+            <p className="mt-2 max-w-md text-sm text-gray-500">
+              Browse the library and add a lift
+              to get today moving.
             </p>
 
             <Link
               href="/"
-              className="mt-5 rounded-lg bg-[#ccff00] px-5 py-3 text-sm font-bold text-black"
+              className="mt-5 rounded-lg bg-[#ccff00] px-5 py-3 text-sm font-bold text-black transition hover:bg-lime-300"
             >
               Go to workouts
             </Link>
@@ -141,16 +178,25 @@ export default function MyPlanPage() {
           <div className="space-y-3">
 
             {currentWorkouts.map((workout) => {
-
               const workoutCalories =
                 workout.calories ??
                 workout.caloriesBurned ??
                 0;
 
+              const isDone = doneIds.some(
+                (id) =>
+                  String(id) ===
+                  String(workout.id)
+              );
+
               return (
                 <div
                   key={workout.id}
-                  className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-[#15171d] p-3 md:flex-row md:items-center"
+                  className={`flex flex-col gap-4 rounded-xl border bg-[#15171d] p-3 transition md:flex-row md:items-center ${
+                    isDone
+                      ? "border-lime-400/40 opacity-70"
+                      : "border-gray-800"
+                  }`}
                 >
 
                   {/* Image */}
@@ -165,15 +211,24 @@ export default function MyPlanPage() {
                   {/* Info */}
                   <div className="flex-1">
 
-                    <h3 className="font-extrabold uppercase">
-                      {workout.name}
-                    </h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-extrabold uppercase">
+                        {workout.name}
+                      </h3>
+
+                      {isDone && (
+                        <span className="rounded-full bg-lime-400 px-2 py-0.5 text-[9px] font-bold uppercase text-black">
+                          Done
+                        </span>
+                      )}
+                    </div>
 
                     <p className="text-xs text-gray-500">
-                      {workout.equipment || "Bodyweight"}
+                      {workout.equipment ||
+                        "Bodyweight"}
                     </p>
 
-                    <div className="mt-2 flex gap-4 text-xs text-gray-400">
+                    <div className="mt-2 flex flex-wrap gap-4 text-xs text-gray-400">
 
                       <span className="flex items-center gap-1">
                         <Clock3 size={13} />
@@ -199,7 +254,7 @@ export default function MyPlanPage() {
 
                     <Link
                       href={`/workouts/${workout.id}`}
-                      className="rounded-lg border border-gray-700 px-4 py-2 text-xs"
+                      className="rounded-lg border border-gray-700 px-4 py-2 text-xs transition hover:border-gray-500"
                     >
                       View Details
                     </Link>
@@ -207,32 +262,51 @@ export default function MyPlanPage() {
                     {activeTab === "plan" ? (
                       <>
                         <button
-                          className="rounded-lg bg-[#ccff00] px-4 py-2 text-xs font-bold text-black"
+                          onClick={() =>
+                            markAsDone(
+                              workout.id
+                            )
+                          }
+                          disabled={isDone}
+                          className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
+                            isDone
+                              ? "cursor-not-allowed bg-gray-700 text-gray-400"
+                              : "bg-[#ccff00] text-black hover:bg-lime-300"
+                          }`}
                         >
                           <Check
                             size={13}
                             className="mr-1 inline"
                           />
-                          Mark as Done
+
+                          {isDone
+                            ? "Done"
+                            : "Mark as Done"}
                         </button>
 
                         <button
                           onClick={() =>
-                            removeFromPlan(workout.id)
+                            removeFromPlan(
+                              workout.id
+                            )
                           }
-                          className="rounded-lg px-3 py-2 text-gray-400 hover:text-white"
+                          aria-label="Remove workout"
+                          className="rounded-lg px-3 py-2 text-gray-400 transition hover:bg-red-500/10 hover:text-red-400"
                         >
-                          <X size={16} />
+                          <X size={17} />
                         </button>
                       </>
                     ) : (
                       <button
                         onClick={() =>
-                          removeFromSaved(workout.id)
+                          removeFromSaved(
+                            workout.id
+                          )
                         }
-                        className="rounded-lg px-3 py-2 text-gray-400 hover:text-white"
+                        aria-label="Remove saved workout"
+                        className="rounded-lg px-3 py-2 text-gray-400 transition hover:bg-red-500/10 hover:text-red-400"
                       >
-                        <X size={16} />
+                        <X size={17} />
                       </button>
                     )}
 

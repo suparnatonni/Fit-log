@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
 export type Workout = {
   id: string | number;
@@ -15,7 +15,6 @@ export type Workout = {
 
   category?: string[];
   tags?: string[];
-
   muscleGroups?: string[];
 
   equipment?: string;
@@ -37,6 +36,8 @@ export type Workout = {
 type PlanContextType = {
   plan: Workout[];
   saved: Workout[];
+  doneIds: (string | number)[];
+  loaded: boolean;
 
   addToPlan: (workout: Workout) => boolean;
   addToSaved: (workout: Workout) => boolean;
@@ -58,23 +59,44 @@ export function PlanProvider({
 }) {
   const [plan, setPlan] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
+  const [doneIds, setDoneIds] = useState<(string | number)[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Load data from localStorage
+  // Load localStorage data
   useEffect(() => {
     try {
       const storedPlan = localStorage.getItem("fitlog-plan");
       const storedSaved = localStorage.getItem("fitlog-saved");
+      const storedDone = localStorage.getItem("fitlog-done");
 
       if (storedPlan) {
-        setPlan(JSON.parse(storedPlan));
+        const parsedPlan = JSON.parse(storedPlan);
+
+        if (Array.isArray(parsedPlan)) {
+          setPlan(parsedPlan);
+        }
       }
 
       if (storedSaved) {
-        setSaved(JSON.parse(storedSaved));
+        const parsedSaved = JSON.parse(storedSaved);
+
+        if (Array.isArray(parsedSaved)) {
+          setSaved(parsedSaved);
+        }
+      }
+
+      if (storedDone) {
+        const parsedDone = JSON.parse(storedDone);
+
+        if (Array.isArray(parsedDone)) {
+          setDoneIds(parsedDone);
+        }
       }
     } catch (error) {
-      console.error("Failed to load FitLog data:", error);
+      console.error(
+        "Failed to load FitLog data:",
+        error
+      );
     } finally {
       setLoaded(true);
     }
@@ -93,16 +115,24 @@ export function PlanProvider({
       "fitlog-saved",
       JSON.stringify(saved)
     );
-  }, [plan, saved, loaded]);
 
-  // Add to Today's Plan
+    localStorage.setItem(
+      "fitlog-done",
+      JSON.stringify(doneIds)
+    );
+  }, [plan, saved, doneIds, loaded]);
+
+  // Add to today's plan
   const addToPlan = (workout: Workout): boolean => {
     const alreadyExists = plan.some(
-      (item) => String(item.id) === String(workout.id)
+      (item) =>
+        String(item.id) === String(workout.id)
     );
 
     if (alreadyExists) {
-      toast("Already added to today's plan");
+      toast.info(
+        "Workout is already in today's plan"
+      );
       return false;
     }
 
@@ -113,9 +143,14 @@ export function PlanProvider({
       return false;
     }
 
-    setPlan((previous) => [...previous, workout]);
+    setPlan((previous) => [
+      ...previous,
+      workout,
+    ]);
 
-    toast.success("Added to today's plan");
+    toast.success(
+      `"${workout.name}" added to today's plan`
+    );
 
     return true;
   };
@@ -123,50 +158,78 @@ export function PlanProvider({
   // Save for later
   const addToSaved = (workout: Workout): boolean => {
     const alreadyExists = saved.some(
-      (item) => String(item.id) === String(workout.id)
+      (item) =>
+        String(item.id) === String(workout.id)
     );
 
     if (alreadyExists) {
-      toast("Already saved");
+      toast.info("Workout is already saved");
       return false;
     }
 
-    setSaved((previous) => [...previous, workout]);
+    setSaved((previous) => [
+      ...previous,
+      workout,
+    ]);
 
-    toast.success("Saved for later");
+    toast.success(
+      `"${workout.name}" saved for later`
+    );
 
     return true;
   };
 
-  // Remove from Today's Plan
-  const removeFromPlan = (id: string | number) => {
+  // Remove from today's plan
+  const removeFromPlan = (
+    id: string | number
+  ) => {
     setPlan((previous) =>
       previous.filter(
-        (item) => String(item.id) !== String(id)
+        (item) =>
+          String(item.id) !== String(id)
+      )
+    );
+
+    setDoneIds((previous) =>
+      previous.filter(
+        (item) =>
+          String(item) !== String(id)
       )
     );
 
     toast.success("Workout removed");
   };
 
-  // Remove from Saved
-  const removeFromSaved = (id: string | number) => {
+  // Remove from saved
+  const removeFromSaved = (
+    id: string | number
+  ) => {
     setSaved((previous) =>
       previous.filter(
-        (item) => String(item.id) !== String(id)
+        (item) =>
+          String(item.id) !== String(id)
       )
     );
 
     toast.success("Removed from saved");
   };
 
-  // Mark as Done
-  const markAsDone = (id: string | number) => {
-    setPlan((previous) =>
-      previous.filter(
-        (item) => String(item.id) !== String(id)
-      )
-    );
+  // Mark workout as done
+  const markAsDone = (
+    id: string | number
+  ) => {
+    setDoneIds((previous) => {
+      const alreadyDone = previous.some(
+        (item) =>
+          String(item) === String(id)
+      );
+
+      if (alreadyDone) {
+        return previous;
+      }
+
+      return [...previous, id];
+    });
 
     toast.success("Workout marked as done");
   };
@@ -176,6 +239,8 @@ export function PlanProvider({
       value={{
         plan,
         saved,
+        doneIds,
+        loaded,
         addToPlan,
         addToSaved,
         removeFromPlan,

@@ -1,8 +1,9 @@
 # FitLog
 
 FitLog is a responsive workout library web application built with Next.js.
-Users can explore workouts, view workout details, add exercises to today's
-plan, and save workouts for later.
+
+Users can explore workouts, view detailed workout information, add exercises
+to today's plan, save workouts for later, and track completed workouts.
 
 ## Technologies Used
 
@@ -12,35 +13,34 @@ plan, and save workouts for later.
 - Tailwind CSS
 - DaisyUI
 - React Icons
+- Lucide React
 - React Toastify
 - REST API
 - LocalStorage
 
 ## Key Features
 
-1. Responsive workout library with workout cards.
-2. Workout details page with equipment, difficulty, sets, reps and instructions.
-3. Add workouts to Today's Plan with a maximum of five workouts.
+1. Responsive workout library for mobile, tablet, and desktop.
+2. Workout details page with equipment, difficulty, sets, reps, duration,
+   calories, rating, and instructions.
+3. Add workouts to Today's Plan with a maximum limit of five workouts.
 4. Save workouts for later and manage saved workouts.
-5. Sort workouts by Duration, Calories and Rating.
-6. Toast notifications for workout actions.
-7. My Plan page with exercise, minutes and calories summary.
-8. LocalStorage support to keep plan and saved workouts after reload.
+5. Sort workouts by Duration, Calories, and Rating.
+6. Mark planned workouts as Done.
+7. Remove workouts from Today's Plan or Saved list.
+8. Toast notifications for workout actions.
+9. Live Exercises, Minutes, and Calories metrics.
+10. LocalStorage persistence after page reload.
 
 ## API
 
-FitLog uses the following REST API:
+### All Workouts
 
 https://api.api-store.workers.dev/api/fitlog
 
-## Project Structure
+### Single Workout
 
-The project uses the Next.js App Router.
-
-- `app/` — Application pages and routes
-- `components/` — Reusable UI components
-- `components/context/` — Plan and saved workout state management
-- `public/` — Public assets
+https://api.api-store.workers.dev/api/fitlog/:id
 
 ## Main Pages
 
@@ -48,13 +48,25 @@ The project uses the Next.js App Router.
 - `/workouts/[id]` — Workout Details
 - `/my-plan` — Today's Plan and Saved Workouts
 
-## Project Highlights
+## Project Structure
 
-FitLog helps users browse workouts, check workout details, organize
-their daily workout plan, save exercises for later, and manage their
-workout progress in a simple interface.
+```text
+app/
+├── page.tsx
+├── layout.tsx
+├── not-found.tsx
+├── my-plan/
+│   └── page.tsx
+└── workouts/
+    └── [id]/
+        └── page.tsx
 
-## Development
-
-This project was built as a Next.js App Router project using TypeScript,
-Tailwind CSS and DaisyUI.
+components/
+├── context/
+│   └── PlanContext.tsx
+├── layout/
+│   ├── Navbar.tsx
+│   └── Footer.tsx
+├── Banner.tsx
+├── WorkoutLibrary.tsx
+└── WorkoutActions.tsx

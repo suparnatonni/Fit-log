@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import WorkoutActions from "@/components/WorkoutActions";
+
 import {
   Clock3,
   Flame,
@@ -14,88 +17,98 @@ interface IWorkout {
   id: string | number;
   name: string;
   image: string;
-  muscleGroups: string[];
-  equipment: string;
-  difficulty: string;
-  duration: number;
-  caloriesBurned: number;
-  sets: number;
-  reps: string;
-  rating: number;
-  description: string;
-  instructions: string[];
+
+  muscleGroups?: string[];
+
+  category?: string[];
+  tags?: string[];
+
+  equipment?: string;
+  difficulty?: string;
+
+  duration?: number;
+  calories?: number;
+  caloriesBurned?: number;
+
+  sets?: number;
+  reps?: string;
+
+  rating?: number;
+
+  description?: string;
+  instructions?: string[];
 }
 
-interface IWorkoutDetailsPageProps {
+interface Props {
   params: Promise<{
     id: string;
   }>;
 }
 
-const API_URL = "https://api.api-store.workers.dev/api/fitlog";
+const API_URL =
+  "https://api.api-store.workers.dev/api/fitlog";
 
-const getWorkouts = async (): Promise<IWorkout[]> => {
+async function getWorkout(
+  id: string
+): Promise<IWorkout | null> {
   try {
-    const response = await fetch(API_URL, {
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${API_URL}/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch workouts");
+      return null;
     }
 
     const data = await response.json();
 
-    // API response array অথবা { data: [] } হলে দুটোই handle করবে
-    const workoutData = Array.isArray(data) ? data : data.data;
+    const workout = data?.data ?? data;
 
-    return Array.isArray(workoutData) ? workoutData : [];
+    return workout ?? null;
   } catch (error) {
-    console.error("Error fetching workout data:", error);
-    return [];
-  }
-};
+    console.error(
+      "Failed to fetch workout:",
+      error
+    );
 
-const WorkoutDetailsPage = async ({
+    return null;
+  }
+}
+
+export default async function WorkoutDetailsPage({
   params,
-}: IWorkoutDetailsPageProps) => {
+}: Props) {
   const { id } = await params;
 
-  const workoutsData = await getWorkouts();
-
-  const workout = workoutsData.find(
-    (item) => String(item.id) === String(id)
-  );
+  const workout = await getWorkout(id);
 
   if (!workout) {
-    return (
-      <main className="flex min-h-[70vh] flex-col items-center justify-center bg-[#0b0d11] px-4 text-center">
-        <h1 className="text-3xl font-extrabold text-white">
-          Workout not found
-        </h1>
-
-        <p className="mt-2 text-sm text-gray-400">
-          The workout you are looking for does not exist.
-        </p>
-
-        <Link
-          href="/"
-          className="mt-6 rounded-lg bg-lime-400 px-6 py-3 text-sm font-bold text-black hover:bg-lime-300"
-        >
-          Go to workouts
-        </Link>
-      </main>
-    );
+    notFound();
   }
+
+  const calories =
+    workout.calories ??
+    workout.caloriesBurned ??
+    0;
+
+  const tags =
+    workout.muscleGroups ??
+    workout.category ??
+    workout.tags ??
+    [];
 
   return (
     <main className="min-h-screen bg-[#0b0d11] px-4 py-10 text-white md:px-8 lg:px-12">
+
       <div className="mx-auto max-w-7xl">
 
         {/* Back */}
         <Link
           href="/"
-          className="mb-6 inline-block text-sm font-semibold text-gray-400 hover:text-lime-400"
+          className="mb-6 inline-block text-sm font-semibold text-gray-400 transition hover:text-lime-400"
         >
           ← Back to workouts
         </Link>
@@ -103,8 +116,9 @@ const WorkoutDetailsPage = async ({
         {/* Main */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
-          {/* LEFT IMAGE */}
+          {/* Image */}
           <div className="relative h-[400px] overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d] md:h-[550px]">
+
             <Image
               src={workout.image}
               alt={workout.name}
@@ -113,9 +127,10 @@ const WorkoutDetailsPage = async ({
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />
+
           </div>
 
-          {/* RIGHT DETAILS */}
+          {/* Details */}
           <div className="flex flex-col justify-center">
 
             {/* Title */}
@@ -125,12 +140,13 @@ const WorkoutDetailsPage = async ({
 
             {/* Description */}
             <p className="mt-4 max-w-2xl leading-7 text-gray-400">
-              {workout.description}
+              {workout.description ||
+                "A focused workout designed to help you train with intent and build consistent strength."}
             </p>
 
             {/* Tags */}
             <div className="mt-4 flex flex-wrap gap-2">
-              {workout.muscleGroups?.map((group) => (
+              {tags.map((group) => (
                 <span
                   key={group}
                   className="rounded-full bg-lime-400 px-3 py-1 text-xs font-bold uppercase text-black"
@@ -146,82 +162,112 @@ const WorkoutDetailsPage = async ({
               <Spec
                 icon={<Dumbbell size={15} />}
                 label="Equipment"
-                value={workout.equipment}
+                value={
+                  workout.equipment ||
+                  "Bodyweight"
+                }
               />
 
               <Spec
                 icon={<BarChart3 size={15} />}
                 label="Difficulty"
-                value={workout.difficulty}
+                value={
+                  workout.difficulty ||
+                  "Not specified"
+                }
               />
 
               <Spec
                 icon={<Repeat size={15} />}
                 label="Sets"
-                value={String(workout.sets)}
+                value={String(
+                  workout.sets ?? 0
+                )}
               />
 
               <Spec
                 icon={<Repeat size={15} />}
                 label="Reps"
-                value={workout.reps}
+                value={
+                  workout.reps || "Not specified"
+                }
               />
 
               <Spec
                 icon={<Clock3 size={15} />}
                 label="Duration"
-                value={`${workout.duration} min`}
+                value={`${workout.duration ?? 0} min`}
               />
 
               <Spec
                 icon={<Flame size={15} />}
                 label="Calories"
-                value={`${workout.caloriesBurned} kcal`}
+                value={`${calories} kcal`}
               />
 
               <Spec
                 icon={<Star size={15} />}
                 label="Rating"
-                value={String(workout.rating)}
+                value={String(
+                  workout.rating ?? 0
+                )}
               />
 
             </div>
 
             {/* Instructions */}
             <div className="mt-7">
+
               <h2 className="mb-4 text-xl font-extrabold uppercase">
                 Instructions
               </h2>
 
-              <ol className="space-y-3">
-                {workout.instructions?.map((instruction, index) => (
-                  <li
-                    key={index}
-                    className="flex gap-3 text-sm leading-6 text-gray-400"
-                  >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-lime-400 text-xs font-bold text-black">
-                      {index + 1}
-                    </span>
+              {workout.instructions &&
+              workout.instructions.length > 0 ? (
+                <ol className="space-y-3">
 
-                    <span>{instruction}</span>
-                  </li>
-                ))}
-              </ol>
+                  {workout.instructions.map(
+                    (instruction, index) => (
+                      <li
+                        key={index}
+                        className="flex gap-3 text-sm leading-6 text-gray-400"
+                      >
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-lime-400 text-xs font-bold text-black">
+                          {index + 1}
+                        </span>
+
+                        <span>
+                          {instruction}
+                        </span>
+                      </li>
+                    )
+                  )}
+
+                </ol>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No instructions available.
+                </p>
+              )}
+
             </div>
 
-            {/* BUTTONS */}
+            {/* Actions */}
             <div className="mt-8">
-              <WorkoutActions workout={workout} />
+              <WorkoutActions
+                workout={workout}
+              />
             </div>
 
           </div>
         </div>
+
       </div>
     </main>
   );
-};
+}
 
-const Spec = ({
+function Spec({
   icon,
   label,
   value,
@@ -229,19 +275,19 @@ const Spec = ({
   icon: React.ReactNode;
   label: string;
   value: string;
-}) => {
+}) {
   return (
     <div className="flex items-center justify-between border-b border-gray-800 px-4 py-3 last:border-b-0">
+
       <div className="flex items-center gap-2 text-xs uppercase text-gray-500">
         {icon}
         <span>{label}</span>
       </div>
 
-      <p className="text-sm font-semibold text-white">
+      <p className="text-right text-sm font-semibold text-white">
         {value}
       </p>
+
     </div>
   );
-};
-
-export default WorkoutDetailsPage;
+}
