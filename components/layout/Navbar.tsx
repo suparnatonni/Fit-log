@@ -1,11 +1,8 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import logo from "@/assets/logo.png";
-
 import { usePlan } from "@/components/context/PlanContext";
 
 const Navbar = () => {
@@ -22,15 +19,9 @@ const Navbar = () => {
 
   return (
     <nav className="border-t-2 border-[#ccff00] bg-[#101116] text-white">
-
       <div className="navbar container mx-auto min-h-16 px-4">
-
-        {/* Left */}
         <div className="navbar-start">
-
-          {/* Mobile menu */}
           <div className="dropdown">
-
             <div
               tabIndex={0}
               role="button"
@@ -71,7 +62,6 @@ const Navbar = () => {
 
           </div>
 
-          {/* Logo */}
           <Link
             href="/"
             className="flex items-center gap-2"
@@ -90,7 +80,7 @@ const Navbar = () => {
 
         </div>
 
-        {/* Desktop Navigation */}
+     
         <div className="navbar-center hidden lg:flex">
 
           <ul className="menu menu-horizontal gap-2 px-1">
@@ -125,13 +115,9 @@ const Navbar = () => {
 
         </div>
 
-        {/* Counters */}
+       
         <div className="navbar-end gap-2 sm:gap-4">
-
-          <Link
-            href="/my-plan"
-            className="flex items-center gap-1.5 text-xs text-gray-300 sm:gap-2"
-          >
+          <Link href="/my-plan"className="flex items-center gap-1.5 text-xs text-gray-300 sm:gap-2" >
             <span>Plan</span>
 
             <span className="badge badge-sm border-0 bg-[#ccff00] text-black">

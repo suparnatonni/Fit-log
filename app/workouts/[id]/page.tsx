@@ -45,8 +45,7 @@ interface Props {
   }>;
 }
 
-const API_URL =
-  "https://api.api-store.workers.dev/api/fitlog";
+const API_URL = "https://api.api-store.workers.dev/api/fitlog";
 
 async function getWorkout(
   id: string
@@ -105,7 +104,7 @@ export default async function WorkoutDetailsPage({
 
       <div className="mx-auto max-w-7xl">
 
-        {/* Back */}
+        
         <Link
           href="/"
           className="mb-6 inline-block text-sm font-semibold text-gray-400 transition hover:text-lime-400"
@@ -113,10 +112,10 @@ export default async function WorkoutDetailsPage({
           ← Back to workouts
         </Link>
 
-        {/* Main */}
+        
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
-          {/* Image */}
+          
           <div className="relative h-[400px] overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d] md:h-[550px]">
 
             <Image
@@ -130,21 +129,15 @@ export default async function WorkoutDetailsPage({
 
           </div>
 
-          {/* Details */}
+          
           <div className="flex flex-col justify-center">
-
-            {/* Title */}
             <h1 className="text-3xl font-extrabold uppercase leading-tight md:text-5xl">
               {workout.name}
             </h1>
-
-            {/* Description */}
             <p className="mt-4 max-w-2xl leading-7 text-gray-400">
               {workout.description ||
                 "A focused workout designed to help you train with intent and build consistent strength."}
             </p>
-
-            {/* Tags */}
             <div className="mt-4 flex flex-wrap gap-2">
               {tags.map((group) => (
                 <span
@@ -155,8 +148,6 @@ export default async function WorkoutDetailsPage({
                 </span>
               ))}
             </div>
-
-            {/* Specs */}
             <div className="mt-7 overflow-hidden rounded-2xl border border-gray-800 bg-[#15171d]">
 
               <Spec
@@ -215,9 +206,8 @@ export default async function WorkoutDetailsPage({
 
             </div>
 
-            {/* Instructions */}
+           
             <div className="mt-7">
-
               <h2 className="mb-4 text-xl font-extrabold uppercase">
                 Instructions
               </h2>
@@ -252,7 +242,7 @@ export default async function WorkoutDetailsPage({
 
             </div>
 
-            {/* Actions */}
+          
             <div className="mt-8">
               <WorkoutActions
                 workout={workout}

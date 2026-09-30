@@ -1,11 +1,5 @@
 "use client";
-
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState,} from "react";
 import { toast } from "react-toastify";
 
 export type Workout = {
@@ -62,7 +56,7 @@ export function PlanProvider({
   const [doneIds, setDoneIds] = useState<(string | number)[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Load localStorage data
+  
   useEffect(() => {
     try {
       const storedPlan = localStorage.getItem("fitlog-plan");
@@ -102,7 +96,7 @@ export function PlanProvider({
     }
   }, []);
 
-  // Save data to localStorage
+ 
   useEffect(() => {
     if (!loaded) return;
 
@@ -122,7 +116,7 @@ export function PlanProvider({
     );
   }, [plan, saved, doneIds, loaded]);
 
-  // Add to today's plan
+  
   const addToPlan = (workout: Workout): boolean => {
     const alreadyExists = plan.some(
       (item) =>
@@ -155,7 +149,7 @@ export function PlanProvider({
     return true;
   };
 
-  // Save for later
+
   const addToSaved = (workout: Workout): boolean => {
     const alreadyExists = saved.some(
       (item) =>
@@ -179,7 +173,7 @@ export function PlanProvider({
     return true;
   };
 
-  // Remove from today's plan
+ 
   const removeFromPlan = (
     id: string | number
   ) => {
@@ -200,7 +194,7 @@ export function PlanProvider({
     toast.success("Workout removed");
   };
 
-  // Remove from saved
+  
   const removeFromSaved = (
     id: string | number
   ) => {
@@ -214,7 +208,7 @@ export function PlanProvider({
     toast.success("Removed from saved");
   };
 
-  // Mark workout as done
+  
   const markAsDone = (
     id: string | number
   ) => {

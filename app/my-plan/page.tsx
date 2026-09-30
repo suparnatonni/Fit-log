@@ -1,28 +1,12 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  Clock3,
-  Flame,
-  Star,
-  Check,
-  X,
-} from "lucide-react";
-
+import {Clock3,Flame,Star,Check,X,} from "lucide-react";
 import { usePlan } from "@/components/context/PlanContext";
 
 export default function MyPlanPage() {
-  const {
-    plan,
-    saved,
-    loaded,
-    removeFromPlan,
-    removeFromSaved,
-    markAsDone,
-    doneIds,
-  } = usePlan();
+  const { plan, saved, loaded, removeFromPlan, removeFromSaved, markAsDone, doneIds, } = usePlan();
 
   const [activeTab, setActiveTab] = useState<
     "plan" | "saved"
@@ -76,32 +60,25 @@ export default function MyPlanPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-extrabold md:text-4xl">
-            MY PLAN
+          <h1 className="text-3xl font-extrabold md:text-4xl"> MY PLAN
           </h1>
 
-          <p className="mt-1 text-sm text-gray-400">
-            Cap of five lifts for today. Finish them,
-            then load more.
+          <p className="mt-1 text-sm text-gray-400"> Cap of five lifts for today. Finish them, then load more.
           </p>
         </div>
 
-        {/* Metrics */}
+       
         <div className="mb-7 grid grid-cols-1 gap-3 rounded-xl border border-gray-800 bg-[#15171d] p-5 sm:grid-cols-3">
-
           <div>
-            <p className="text-xs text-gray-500">
-              Exercises
+            <p className="text-xs text-gray-500">Exercises
             </p>
 
-            <p className="mt-1 text-3xl font-extrabold text-[#ccff00]">
-              {todayPlan.length}
+            <p className="mt-1 text-3xl font-extrabold text-[#ccff00]"> {todayPlan.length}
             </p>
           </div>
 
           <div>
-            <p className="text-xs text-gray-500">
-              Minutes
+            <p className="text-xs text-gray-500"> Minutes
             </p>
 
             <p className="mt-1 text-3xl font-extrabold">
@@ -110,8 +87,7 @@ export default function MyPlanPage() {
           </div>
 
           <div>
-            <p className="text-xs text-gray-500">
-              Calories
+            <p className="text-xs text-gray-500">Calories
             </p>
 
             <p className="mt-1 text-3xl font-extrabold">
@@ -152,7 +128,7 @@ export default function MyPlanPage() {
 
         </div>
 
-        {/* Empty State */}
+    
         {currentWorkouts.length === 0 ? (
           <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-800 px-4 text-center">
 
@@ -199,7 +175,7 @@ export default function MyPlanPage() {
                   }`}
                 >
 
-                  {/* Image */}
+                 
                   <Image
                     src={workout.image}
                     alt={workout.name}
@@ -208,9 +184,8 @@ export default function MyPlanPage() {
                     className="h-20 w-full rounded-lg object-cover md:w-32"
                   />
 
-                  {/* Info */}
+                  
                   <div className="flex-1">
-
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-extrabold uppercase">
                         {workout.name}
@@ -249,7 +224,7 @@ export default function MyPlanPage() {
 
                   </div>
 
-                  {/* Actions */}
+                
                   <div className="flex flex-wrap gap-2">
 
                     <Link

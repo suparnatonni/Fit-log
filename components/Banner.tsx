@@ -1,20 +1,14 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowDown } from "react-icons/fi";
-
 import bannerImg from "@/assets/banner.png";
 
 const Banner = () => {
   return (
     <section className="px-4 py-6 md:py-8">
-
       <div className="container mx-auto overflow-hidden rounded-2xl border border-[#292c34] bg-[#15171d]">
-
         <div className="grid items-center gap-6 px-6 py-10 md:grid-cols-2 md:px-10 md:py-12 lg:px-12">
-
-          {/* Content */}
           <div>
 
             <p className="mb-5 text-[10px] font-bold tracking-widest text-[#ccff00]">
@@ -45,9 +39,8 @@ const Banner = () => {
 
           </div>
 
-          {/* Image */}
+         
           <div className="relative flex items-center justify-center md:justify-end">
-
             <Image
               src={bannerImg}
               alt="Workout"

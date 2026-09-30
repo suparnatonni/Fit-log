@@ -1,14 +1,6 @@
 "use client";
-
-import {
-  FaPlus,
-  FaBookmark,
-} from "react-icons/fa";
-
-import {
-  usePlan,
-  Workout,
-} from "@/components/context/PlanContext";
+import {FaPlus,FaBookmark,} from "react-icons/fa";
+import { usePlan, Workout,} from "@/components/context/PlanContext";
 
 const WorkoutActions = ({
   workout,

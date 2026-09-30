@@ -1,14 +1,8 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-import {
-  FiChevronDown,
-  FiClock,
-  FiStar,
-} from "react-icons/fi";
+import { FiChevronDown, FiClock, FiStar,} from "react-icons/fi";
 
 import { FaFire } from "react-icons/fa";
 
@@ -119,7 +113,7 @@ const WorkoutLibrary = () => {
       );
     });
 
-  // Loading
+
   if (loading) {
     return (
       <section
@@ -145,7 +139,7 @@ const WorkoutLibrary = () => {
     );
   }
 
-  // Error
+ 
   if (error) {
     return (
       <section
@@ -170,7 +164,7 @@ const WorkoutLibrary = () => {
     >
       <div className="mx-auto max-w-7xl">
 
-        {/* Header */}
+     
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
 
           <div>
@@ -183,7 +177,7 @@ const WorkoutLibrary = () => {
             </p>
           </div>
 
-          {/* C1 */}
+         
           <div className="flex items-center gap-2">
 
             <span className="text-xs font-semibold text-gray-500">
@@ -225,7 +219,7 @@ const WorkoutLibrary = () => {
 
         </div>
 
-        {/* Grid */}
+       
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 
           {sortedWorkouts.map((workout) => {
@@ -247,9 +241,8 @@ const WorkoutLibrary = () => {
                 className="group overflow-hidden rounded-xl border border-gray-800 bg-[#15171d] transition hover:-translate-y-1 hover:border-lime-400/50"
               >
 
-                {/* Image */}
+                
                 <div className="relative h-40 w-full overflow-hidden">
-
                   <Image
                     src={workout.image}
                     alt={workout.name}
@@ -260,9 +253,8 @@ const WorkoutLibrary = () => {
 
                 </div>
 
-                {/* Content */}
+               
                 <div className="p-3">
-
                   <div className="mb-2 flex flex-wrap gap-1">
 
                     {categories
