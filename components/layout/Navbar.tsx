@@ -1,19 +1,20 @@
+
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import logo from "@/assets/logo.png";
+import { usePlan } from "@/components/context/PlanContext";
 
 const Navbar = () => {
+  const { plan, saved } = usePlan();
+
   return (
     <nav className="border-t-2 border-[#ccff00] bg-[#101116] text-white">
       <div className="navbar container mx-auto min-h-16 px-4">
-
-        {/* Left Side - Logo */}
+        {/* Logo and Mobile Menu */}
         <div className="navbar-start">
-          
-          {/* Mobile Menu */}
           <div className="dropdown">
             <div
               tabIndex={0}
@@ -43,32 +44,23 @@ const Navbar = () => {
               <li>
                 <Link href="/">Workouts</Link>
               </li>
-
               <li>
                 <Link href="/my-plan">My Plan</Link>
               </li>
             </ul>
           </div>
 
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <Image
-              src={logo}
-              alt="FitLog Logo"
-              width={30}
-              height={30}
-            />
-
+            <Image src={logo} alt="FitLog Logo" width={30} height={30} />
             <span className="text-sm font-extrabold tracking-wider">
               FITLOG
             </span>
           </Link>
         </div>
 
-        {/* Center - Navigation */}
+        {/* Center Navigation */}
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal gap-2 px-1">
-
             <li>
               <Link
                 href="/"
@@ -77,7 +69,6 @@ const Navbar = () => {
                 Workouts
               </Link>
             </li>
-
             <li>
               <Link
                 href="/my-plan"
@@ -86,39 +77,31 @@ const Navbar = () => {
                 My Plan
               </Link>
             </li>
-
           </ul>
         </div>
 
-        {/* Right Side - Plan & Saved */}
-        <div className="navbar-end gap-4">
-
-          {/* Plan */}
+        {/* Plan and Saved Counters */}
+        <div className="navbar-end gap-3 sm:gap-4">
           <Link
             href="/my-plan"
             className="flex items-center gap-2 text-xs text-gray-300"
           >
             <span>Plan</span>
-
             <span className="badge badge-sm border-0 bg-[#ccff00] text-black">
-              0
+              {plan.length}
             </span>
           </Link>
 
-          {/* Saved */}
           <Link
             href="/my-plan"
             className="flex items-center gap-2 text-xs text-gray-300"
           >
             <span>Saved</span>
-
             <span className="badge badge-sm border border-gray-600 bg-transparent text-white">
-              0
+              {saved.length}
             </span>
           </Link>
-
         </div>
-
       </div>
     </nav>
   );

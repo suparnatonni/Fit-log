@@ -1,14 +1,11 @@
-import Banner from '@/components/Banner';
-import WorkoutLibrary from '@/components/WorkoutLibrary';
-import React from 'react';
+import Banner from "@/components/Banner";
+import WorkoutLibrary from "@/components/WorkoutLibrary";
 
-const page = () => {
+export default function HomePage() {
   return (
-    <div>
+    <>
       <Banner />
       <WorkoutLibrary />
-    </div>
+    </>
   );
-};
-
-export default page;
+}

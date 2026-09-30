@@ -1,110 +1,141 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { toast } from "react-toastify";
 
 export type Workout = {
   id: string | number;
   name: string;
   image: string;
-  muscleGroups: string[];
-  equipment: string;
-  difficulty: string;
-  duration: number;
-  caloriesBurned: number;
-  sets: number;
-  reps: string;
-  rating: number;
-  description: string;
-  instructions: string[];
+
+  category?: string[];
+  tags?: string[];
+
+  muscleGroups?: string[];
+
+  equipment?: string;
+  difficulty?: string;
+
+  duration?: number;
+  calories?: number;
+  caloriesBurned?: number;
+
+  sets?: number;
+  reps?: string;
+
+  rating?: number;
+
+  description?: string;
+  instructions?: string[];
 };
 
-type PlanContextType = {
+interface IPlanContext {
   plan: Workout[];
   saved: Workout[];
-  addToPlan: (workout: Workout) => void;
-  addToSaved: (workout: Workout) => void;
+
+  addToPlan: (workout: Workout) => boolean;
   removeFromPlan: (id: string | number) => void;
+
+  addToSaved: (workout: Workout) => boolean;
   removeFromSaved: (id: string | number) => void;
-};
+}
 
-const PlanContext = createContext<PlanContextType | undefined>(undefined);
+export const PlanContext = createContext<IPlanContext>({
+  plan: [],
+  saved: [],
 
-export function PlanProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+  addToPlan: () => false,
+  removeFromPlan: () => {},
+
+  addToSaved: () => false,
+  removeFromSaved: () => {},
+});
+
+export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [plan, setPlan] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
+  // Load data from localStorage
   useEffect(() => {
-    const savedPlan = localStorage.getItem("fitlog-plan");
-    const savedWorkouts = localStorage.getItem("fitlog-saved");
+    try {
+      const storedPlan = localStorage.getItem("fitlog-plan");
+      const storedSaved = localStorage.getItem("fitlog-saved");
 
-    if (savedPlan) {
-      setPlan(JSON.parse(savedPlan));
+      if (storedPlan) {
+        setPlan(JSON.parse(storedPlan));
+      }
+
+      if (storedSaved) {
+        setSaved(JSON.parse(storedSaved));
+      }
+    } catch (error) {
+      console.error("Failed to load FitLog data:", error);
+    } finally {
+      setLoaded(true);
     }
-
-    if (savedWorkouts) {
-      setSaved(JSON.parse(savedWorkouts));
-    }
-
-    setHydrated(true);
   }, []);
 
+  // Save data to localStorage
   useEffect(() => {
-    if (!hydrated) return;
+    if (!loaded) return;
 
     localStorage.setItem("fitlog-plan", JSON.stringify(plan));
     localStorage.setItem("fitlog-saved", JSON.stringify(saved));
-  }, [plan, saved, hydrated]);
+  }, [plan, saved, loaded]);
 
+  // Add to Today's Plan
   const addToPlan = (workout: Workout) => {
-    const alreadyExists = plan.some(
-      (item) => String(item.id) === String(workout.id)
-    );
-
-    if (alreadyExists) {
-      toast("Already added to today's plan");
-      return;
+    if (plan.some((item) => String(item.id) === String(workout.id))) {
+      toast.info("Already added to today's plan");
+      return false;
     }
 
     if (plan.length >= 5) {
       toast.error("Today's plan can contain maximum 5 workouts");
-      return;
+      return false;
     }
 
-    setPlan([...plan, workout]);
+    setPlan((previous) => [...previous, workout]);
+
     toast.success("Added to today's plan");
+
+    return true;
   };
 
-  const addToSaved = (workout: Workout) => {
-    const alreadyExists = saved.some(
-      (item) => String(item.id) === String(workout.id)
-    );
-
-    if (alreadyExists) {
-      toast("Already saved");
-      return;
-    }
-
-    setSaved([...saved, workout]);
-    toast.success("Saved for later");
-  };
-
+  // Remove from Today's Plan
   const removeFromPlan = (id: string | number) => {
-    setPlan((current) =>
-      current.filter((item) => String(item.id) !== String(id))
+    setPlan((previous) =>
+      previous.filter((item) => String(item.id) !== String(id))
     );
 
     toast.success("Removed from today's plan");
   };
 
+  // Add to Saved
+  const addToSaved = (workout: Workout) => {
+    if (saved.some((item) => String(item.id) === String(workout.id))) {
+      toast.info("Already saved");
+      return false;
+    }
+
+    setSaved((previous) => [...previous, workout]);
+
+    toast.success("Saved for later");
+
+    return true;
+  };
+
+  // Remove from Saved
   const removeFromSaved = (id: string | number) => {
-    setSaved((current) =>
-      current.filter((item) => String(item.id) !== String(id))
+    setSaved((previous) =>
+      previous.filter((item) => String(item.id) !== String(id))
     );
 
     toast.success("Removed from saved");
@@ -116,22 +147,18 @@ export function PlanProvider({
         plan,
         saved,
         addToPlan,
-        addToSaved,
         removeFromPlan,
+        addToSaved,
         removeFromSaved,
       }}
     >
       {children}
     </PlanContext.Provider>
   );
-}
+};
 
-export function usePlan() {
-  const context = useContext(PlanContext);
+export const usePlan = () => {
+  return useContext(PlanContext);
+};
 
-  if (!context) {
-    throw new Error("usePlan must be used inside PlanProvider");
-  }
-
-  return context;
-}
+export default PlanProvider;
